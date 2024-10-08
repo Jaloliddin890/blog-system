@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: 'jdbc:postgresql://localhost:5432/blog'
+    username: postgres
+    password: 123
+    driver-class-name: 'org.postgresql.Driver'
+  jpa:
+    hibernate:
+      ddl-auto: update
+      show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+openapi:
+  version: "3.0.0"
+  info:
+    title: "Your API"
+    description: "API documentation for the Blog System"
+    version: "1.0.0"

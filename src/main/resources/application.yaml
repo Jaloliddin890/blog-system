@@ -17,3 +17,9 @@ openapi:
     title: "Your API"
     description: "API documentation for the Blog System"
     version: "1.0.0"
+
+logging:
+  level:
+    tmrv.dev.blogsystem.controller.PostController: DEBUG
+    org.springframework.security: DEBUG
+

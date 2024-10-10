@@ -1,21 +1,18 @@
 package tmrv.dev.blogsystem.controller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+;
+import org.springframework.web.bind.annotation.*;
 import tmrv.dev.blogsystem.Services.PostService;
 import tmrv.dev.blogsystem.dtos.PostDto;
 import tmrv.dev.blogsystem.entities.Post;
-import tmrv.dev.blogsystem.entities.User;
+
+import java.util.List;
+
 
 @RestController
 @Tag(name = "Post Controller", description = "This Post's apis provide CRUD operations")
@@ -23,24 +20,32 @@ import tmrv.dev.blogsystem.entities.User;
 @PreAuthorize(value = "hasRole('USER')")
 public class PostController {
     private final PostService postService;
-    private static final Logger log = LoggerFactory.getLogger(PostController.class);
+
     public PostController(PostService postService) {
         this.postService = postService;
     }
 
-
-    @PostMapping("/createPost")
-    public ResponseEntity<Post> createPost(@RequestBody @Valid PostDto postDto,
-                                           @AuthenticationPrincipal User user) {
-
-        if (user == null) {
-            log.error("Authenticated user is null");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        }
-
-        log.info("Authenticated user: {}", user.getUsername());
-        Post createdPost = postService.createPost(postDto, user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdPost);
+    @PostMapping("/create")
+    public ResponseEntity<Post> createPost(@RequestBody PostDto postDto) {
+        Post post = postService.createPost(postDto);
+        return ResponseEntity.ok(post);
     }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<Post> updatePost(@RequestBody PostDto postDto, @PathVariable Long id) {
+        Post updatedPost = postService.updatePost(postDto, id);
+        return ResponseEntity.ok(updatedPost);
+    }
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deletePost( @PathVariable Long id) {
+        String deletePost = postService.deletePost( id);
+        return ResponseEntity.ok(deletePost);
+    }
+
+    @GetMapping("/getAll")
+    public ResponseEntity<List<Post>> getAll(){
+        return ResponseEntity.ok(postService.getAllPosts());
+    }
+
 
 }

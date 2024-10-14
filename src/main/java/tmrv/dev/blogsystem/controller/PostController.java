@@ -3,6 +3,8 @@ package tmrv.dev.blogsystem.controller;
 
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 ;
@@ -11,7 +13,6 @@ import tmrv.dev.blogsystem.Services.PostService;
 import tmrv.dev.blogsystem.dtos.PostDto;
 import tmrv.dev.blogsystem.entities.Post;
 
-import java.util.List;
 
 
 @RestController
@@ -42,9 +43,10 @@ public class PostController {
         return ResponseEntity.ok(deletePost);
     }
 
-    @GetMapping("/getAll")
-    public ResponseEntity<List<Post>> getAll(){
-        return ResponseEntity.ok(postService.getAllPosts());
+    @GetMapping
+    public ResponseEntity<Page<Post>> getAllPosts(Pageable pageable) {
+        Page<Post> posts = postService.getPosts(pageable);
+        return ResponseEntity.ok(posts);
     }
 
 

@@ -1,6 +1,8 @@
 package tmrv.dev.blogsystem.Services;
 
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -55,8 +57,8 @@ public class PostService {
         return "Post with ID: " + id + " deleted";
     }
 
-    public List<Post> getAllPosts(){
-        return postRepository.findAll();
+    public Page<Post> getPosts(Pageable pageable) {
+        return postRepository.findAll(pageable);
     }
 
 }

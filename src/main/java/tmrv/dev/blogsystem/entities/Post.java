@@ -33,6 +33,9 @@ public class Post {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+    @Column(nullable= true)
+    private String imagePath;
+
     @Column(nullable = false)
     private boolean published = true;
     @PrePersist

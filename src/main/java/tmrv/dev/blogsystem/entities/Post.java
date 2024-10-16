@@ -27,6 +27,9 @@ public class Post {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Column(nullable = true)
+    private String imagePath;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

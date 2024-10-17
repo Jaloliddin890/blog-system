@@ -2,6 +2,7 @@ package tmrv.dev.blogsystem.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tmrv.dev.blogsystem.dtos.UserDto;
@@ -18,8 +19,8 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody UserDto userDto) {
+    @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> registerUser(@ModelAttribute UserDto userDto) {
         try {
             String token = authService.registerUser(userDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(token);

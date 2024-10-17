@@ -22,4 +22,10 @@ logging:
   level:
     tmrv.dev.blogsystem.controller.PostController: DEBUG
     org.springframework.security: DEBUG
+# For MultiPart Files
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
 

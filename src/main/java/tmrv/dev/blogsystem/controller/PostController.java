@@ -2,8 +2,6 @@ package tmrv.dev.blogsystem.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,9 +33,9 @@ public class PostController {
 
     @Operation(summary = "Create a new post", description = "Create a new post with title, content, publication status, and an optional image file.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Post created successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Map.class))),
-            @ApiResponse(responseCode = "400", description = "Bad request (validation error)", content = @Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))})
+            @ApiResponse(responseCode = "200", description = "Post created successfully"),
+            @ApiResponse(responseCode = "400", description = "Bad request (validation error)"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")})
     @PostMapping(value = "/createPost", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Map<String, Object>> createPost(@Parameter @RequestParam String title,
                                                           @Parameter @RequestParam String content,
@@ -58,9 +56,9 @@ public class PostController {
 
     @Operation(summary = "Update an existing post", description = "Updates a post's title, content, publication status, and optionally its image.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Post updated successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Post.class))),
-            @ApiResponse(responseCode = "404", description = "Post not found", content = @Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))})
+            @ApiResponse(responseCode = "200", description = "Post updated successfully"),
+            @ApiResponse(responseCode = "404", description = "Post not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")})
     @PutMapping(value = "/updatePost/{postId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Post> updatePost(@PathVariable Long postId,
                                            @Parameter @RequestParam String title,
@@ -74,9 +72,9 @@ public class PostController {
 
     @Operation(summary = "Get a post by ID", description = "Retrieves a post's details using its ID.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Post retrieved successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Map.class))),
-            @ApiResponse(responseCode = "404", description = "Post not found", content = @Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))})
+            @ApiResponse(responseCode = "200", description = "Post retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Post not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")})
     @GetMapping("/getPost/{id}")
     public ResponseEntity<Map<String, Object>> getPost(@PathVariable Long id) {
         Map<String, Object> response = postService.getPost(id);
@@ -86,9 +84,9 @@ public class PostController {
 
     @Operation(summary = "Delete a post by ID", description = "Deletes a post using its ID.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Post deleted successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))),
-            @ApiResponse(responseCode = "404", description = "Post not found", content = @Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))})
+            @ApiResponse(responseCode = "200", description = "Post deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Post not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")})
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deletePost(@PathVariable Long id) {
         String deletePost = postService.deletePost(id);
@@ -98,8 +96,8 @@ public class PostController {
 
     @Operation(summary = "Get all posts", description = "Retrieves a list of all posts.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Posts retrieved successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))})
+            @ApiResponse(responseCode = "200", description = "Posts retrieved successfully"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")})
     @GetMapping("/getAll")
     public ResponseEntity<List<Post>> getAll() {
         return ResponseEntity.ok(postService.getAllPosts());

@@ -45,4 +45,9 @@ public class CommentService {
         Post post = postRepository.findById(postId).orElseThrow(() -> new Exception("Post not found"));
         return commentRepository.findByPost(post);
     }
+
+    public Long deleteComment(Long id){
+        commentRepository.findById(id).ifPresent(commentRepository::delete);
+        return id;
+    }
 }

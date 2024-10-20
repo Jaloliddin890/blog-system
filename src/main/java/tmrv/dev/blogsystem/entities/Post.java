@@ -38,7 +38,7 @@ public class Post {
 
 
     @Column(nullable = false)
-    private boolean published = true;
+    private boolean blockComment = true;
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();

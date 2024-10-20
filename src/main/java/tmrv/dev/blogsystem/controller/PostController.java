@@ -34,15 +34,16 @@ public class PostController {
     }
 
     @Operation(summary = "Create a new post", description = "Create a new post with title, content, publication status, and an optional image file.")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Post created successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Map.class))),
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Post created successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Map.class))),
             @ApiResponse(responseCode = "400", description = "Bad request (validation error)", content = @Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json"))})
     @PostMapping(value = "/createPost", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Map<String, Object>> createPost(@Parameter @RequestParam String title,
                                                           @Parameter @RequestParam String content,
-                                                          @Parameter @RequestParam boolean published,
+                                                          @Parameter @RequestParam boolean blockComment,
                                                           @RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
-        PostDto postDto = new PostDto(title, content, published);
+        PostDto postDto = new PostDto(title, content, blockComment);
         Post post = postService.createPost(postDto, file);
 
         Map<String, Object> response = new HashMap<>();
@@ -64,9 +65,9 @@ public class PostController {
     public ResponseEntity<Post> updatePost(@PathVariable Long postId,
                                            @Parameter @RequestParam String title,
                                            @Parameter @RequestParam String content,
-                                           @Parameter @RequestParam boolean published,
+                                           @Parameter @RequestParam boolean blockComment,
                                            @RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
-        PostDto postDto = new PostDto(title, content, published);
+        PostDto postDto = new PostDto(title, content, blockComment);
         Post updatedPost = postService.updatePost(postId, postDto, file);
         return ResponseEntity.ok(updatedPost);
     }

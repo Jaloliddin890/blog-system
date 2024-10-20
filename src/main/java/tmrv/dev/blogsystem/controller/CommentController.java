@@ -13,8 +13,11 @@ import org.springframework.web.bind.annotation.*;
 import tmrv.dev.blogsystem.Services.CommentService;
 import tmrv.dev.blogsystem.dtos.CommentDto;
 import tmrv.dev.blogsystem.entities.Comment;
+import tmrv.dev.blogsystem.entities.Post;
+import tmrv.dev.blogsystem.repository.PostRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -22,9 +25,11 @@ import java.util.List;
 public class CommentController {
 
     private final CommentService commentService;
+    private final PostRepository postRepository;
 
-    public CommentController(CommentService commentService) {
+    public CommentController(CommentService commentService,PostRepository postRepository1) {
         this.commentService = commentService;
+        this.postRepository = postRepository1;
     }
 
     @Operation(summary = "Add a new comment", description = "Adds a new comment to a specific post by providing the post ID and comment data.")
@@ -37,10 +42,21 @@ public class CommentController {
                     content = @Content(mediaType = "application/json"))
     })
     @PostMapping("/{postId}/addComment")
-    public ResponseEntity<CommentDto> addComment(@PathVariable Long postId,
+    public ResponseEntity<String> addComment(@PathVariable Long postId,
                                                  @RequestBody @Valid CommentDto commentDto) throws Exception {
-        CommentDto createdComment = commentService.addComment(postId, commentDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdComment);
+
+        Optional<Post> optionalPost = postRepository.findById(postId);
+        if (optionalPost.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Post not found.");
+        }
+        Post post = optionalPost.get();
+
+        if (post.isBlockComment()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Comments are blocked for this post.");
+        }else{
+            commentService.addComment(postId, commentDto);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Comment created successfully");
+        }
     }
 
 

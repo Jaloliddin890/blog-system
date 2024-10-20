@@ -30,15 +30,20 @@ public class CommentService {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
         Post post = postRepository.findById(postId).orElseThrow(() -> new Exception("Post not found"));
-        Comment comment = new Comment();
-        comment.setContent(commentDto.content());
-        comment.setPost(post);
-        comment.setUser(user);
-        Comment savedComment = commentRepository.save(comment);
+        if(post.isBlockComment()){
+            throw new Exception("Post is blocked");
+        }else{
+            Comment comment = new Comment();
+            comment.setContent(commentDto.content());
+            comment.setPost(post);
+            comment.setUser(user);
+            Comment savedComment = commentRepository.save(comment);
 
-        return new CommentDto(
-                savedComment.getContent()
-        );
+            return new CommentDto(
+                    savedComment.getContent()
+            );
+        }
+
     }
 
     public List<Comment> getCommentsByPostId(Long postId) throws Exception {

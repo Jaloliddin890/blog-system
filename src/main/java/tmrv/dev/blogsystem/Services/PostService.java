@@ -44,7 +44,7 @@ public class PostService {
         Post post = new Post();
         post.setTitle(postDto.title());
         post.setContent(postDto.content());
-        post.setPublished(postDto.published());
+        post.setBlockComment(postDto.blockComment());
         post.setUser(user);
 
         return handleImage(file, post);
@@ -63,7 +63,7 @@ public class PostService {
 
         existingPost.setTitle(postDto.title());
         existingPost.setContent(postDto.content());
-        existingPost.setPublished(postDto.published());
+        existingPost.setBlockComment(postDto.blockComment());
 
         return handleImage(file, existingPost);
     }

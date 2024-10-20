@@ -13,6 +13,5 @@ import java.io.Serializable;
 public record PostDto(
        @NotNull String title,
        String content,
-       boolean published
-) implements Serializable {
+       boolean blockComment) implements Serializable {
 }

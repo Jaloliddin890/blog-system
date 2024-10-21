@@ -22,8 +22,6 @@ import java.util.Map;
 
 @RestController
 @Tag(name = "Post Controller", description = "CRUD operations for Posts")
-@RequestMapping("/post")
-@PreAuthorize("hasRole('USER')")
 public class PostController {
     private final PostService postService;
 
@@ -36,7 +34,8 @@ public class PostController {
             @ApiResponse(responseCode = "200", description = "Post created successfully"),
             @ApiResponse(responseCode = "400", description = "Bad request (validation error)"),
             @ApiResponse(responseCode = "500", description = "Internal server error")})
-    @PostMapping(value = "/createPost", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping(value = "/user/createPost", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Map<String, Object>> createPost(@Parameter @RequestParam String title,
                                                           @Parameter @RequestParam String content,
                                                           @Parameter @RequestParam boolean blockComment,
@@ -59,7 +58,8 @@ public class PostController {
             @ApiResponse(responseCode = "200", description = "Post updated successfully"),
             @ApiResponse(responseCode = "404", description = "Post not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")})
-    @PutMapping(value = "/updatePost/{postId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('USER')")
+    @PutMapping(value = "/user/updatePost/{postId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Post> updatePost(@PathVariable Long postId,
                                            @Parameter @RequestParam String title,
                                            @Parameter @RequestParam String content,
@@ -75,7 +75,8 @@ public class PostController {
             @ApiResponse(responseCode = "200", description = "Post retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "Post not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")})
-    @GetMapping("/getPost/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @GetMapping("/both/getPost/{id}")
     public ResponseEntity<Map<String, Object>> getPost(@PathVariable Long id) {
         Map<String, Object> response = postService.getPost(id);
         return ResponseEntity.ok(response);
@@ -87,7 +88,8 @@ public class PostController {
             @ApiResponse(responseCode = "200", description = "Post deleted successfully"),
             @ApiResponse(responseCode = "404", description = "Post not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")})
-    @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @DeleteMapping("/both/delete/{id}")
     public ResponseEntity<String> deletePost(@PathVariable Long id) {
         String deletePost = postService.deletePost(id);
         return ResponseEntity.ok(deletePost);
@@ -98,7 +100,8 @@ public class PostController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Posts retrieved successfully"),
             @ApiResponse(responseCode = "500", description = "Internal server error")})
-    @GetMapping("/getAll")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @GetMapping("/both/getAll")
     public ResponseEntity<List<Post>> getAll() {
         return ResponseEntity.ok(postService.getAllPosts());
     }

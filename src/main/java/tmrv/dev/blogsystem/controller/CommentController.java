@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import tmrv.dev.blogsystem.Services.CommentService;
 import tmrv.dev.blogsystem.dtos.CommentDto;
@@ -18,7 +19,6 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/posts")
 @Tag(name = "Comment Controller", description = "Endpoints for managing comments on posts")
 public class CommentController {
 
@@ -36,7 +36,8 @@ public class CommentController {
             @ApiResponse(responseCode = "400", description = "Invalid input data"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PostMapping("/{postId}/addComment")
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping("/user/addComment/{postId}")
     public ResponseEntity<String> addComment(@PathVariable Long postId,
                                              @RequestBody @Valid CommentDto commentDto) throws Exception {
 
@@ -61,7 +62,8 @@ public class CommentController {
             @ApiResponse(responseCode = "404", description = "Post not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping("/{postId}/getComments")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @GetMapping("/both/getComments/{postId}")
     public ResponseEntity<List<Comment>> getComments(@PathVariable Long postId) throws Exception {
         List<Comment> comments = commentService.getCommentsByPostId(postId);
         return ResponseEntity.ok(comments);
@@ -73,7 +75,8 @@ public class CommentController {
             @ApiResponse(responseCode = "404", description = "Comment not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PostMapping("{commentId}/deleteComment")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PostMapping("/both/deleteComment/{commentId}")
     public ResponseEntity<Long> deleteComment(@PathVariable Long commentId) {
         Long deletedId = commentService.deleteComment(commentId);
         return ResponseEntity.ok(deletedId);

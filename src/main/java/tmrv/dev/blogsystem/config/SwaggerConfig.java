@@ -8,10 +8,12 @@ import io.swagger.v3.oas.annotations.info.License;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.servers.Server;
+import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.lang.NonNull;
 
 @Configuration
 @OpenAPIDefinition(
@@ -50,13 +52,45 @@ public class SwaggerConfig {
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
-            public void addCorsMappings(CorsRegistry registry) {
+            public void addCorsMappings(@NonNull CorsRegistry registry) {
                 registry.addMapping("/**")
                         .allowedOrigins("http://localhost:8080")
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowCredentials(true);
             }
         };
+    }
+
+    @Bean
+    public GroupedOpenApi admin() {
+        return GroupedOpenApi.builder()
+                .group("Admin APIs")
+                .pathsToMatch("/admin/**")
+                .build();
+    }
+
+    @Bean
+    public GroupedOpenApi customer() {
+        return GroupedOpenApi.builder()
+                .group("User APIs")
+                .pathsToMatch("/user/**")
+                .build();
+    }
+
+    @Bean
+    public GroupedOpenApi both() {
+        return GroupedOpenApi.builder()
+                .group("User and Admin APIs")
+                .pathsToMatch("/both/**")
+                .build();
+    }
+
+    @Bean
+    public GroupedOpenApi noAuthenticationApi() {
+        return GroupedOpenApi.builder()
+                .group("No Auth APIs")
+                .pathsToMatch("/register/**", "/login/**")
+                .build();
     }
 
 

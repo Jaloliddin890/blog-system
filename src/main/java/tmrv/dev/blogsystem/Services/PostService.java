@@ -8,6 +8,7 @@ import tmrv.dev.blogsystem.dtos.PostDto;
 import tmrv.dev.blogsystem.entities.Post;
 import tmrv.dev.blogsystem.entities.User;
 import tmrv.dev.blogsystem.exception.ResourceNotFoundException;
+import tmrv.dev.blogsystem.exception.UserBlockedException;
 import tmrv.dev.blogsystem.repository.PostRepository;
 import tmrv.dev.blogsystem.repository.UserRepository;
 
@@ -41,6 +42,9 @@ public class PostService {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+        if (!user.isEnabled()) {
+            throw new UserBlockedException();
+        }
         Post post = new Post();
         post.setTitle(postDto.title());
         post.setContent(postDto.content());
@@ -57,6 +61,10 @@ public class PostService {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!user.isEnabled()) {
+            throw new UserBlockedException();
+        }
         if (!existingPost.getUser().getId().equals(user.getId())) {
             throw new RuntimeException("You are not authorized to update this post");
         }
@@ -69,6 +77,13 @@ public class PostService {
     }
 
     public String deletePost(Long id) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!user.isEnabled()) {
+            throw new UserBlockedException();
+        }
         postRepository.deleteById(id);
         return "Post with ID: " + id + " deleted";
     }

@@ -6,6 +6,7 @@ import tmrv.dev.blogsystem.dtos.CommentDto;
 import tmrv.dev.blogsystem.entities.Comment;
 import tmrv.dev.blogsystem.entities.Post;
 import tmrv.dev.blogsystem.entities.User;
+import tmrv.dev.blogsystem.exception.UserBlockedException;
 import tmrv.dev.blogsystem.repository.CommentRepository;
 import tmrv.dev.blogsystem.repository.PostRepository;
 import tmrv.dev.blogsystem.repository.UserRepository;
@@ -26,9 +27,12 @@ public class CommentService {
         this.userRepository = userRepository;
     }
 
-    public CommentDto addComment(Long postId,  CommentDto commentDto) throws Exception {
+    public void addComment(Long postId, CommentDto commentDto) throws Exception {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+        if (!user.isEnabled()) {
+            throw new UserBlockedException();
+        }
         Post post = postRepository.findById(postId).orElseThrow(() -> new Exception("Post not found"));
         if(post.isBlockComment()){
             throw new Exception("Post is blocked");
@@ -39,7 +43,7 @@ public class CommentService {
             comment.setUser(user);
             Comment savedComment = commentRepository.save(comment);
 
-            return new CommentDto(
+            new CommentDto(
                     savedComment.getContent()
             );
         }
@@ -52,6 +56,11 @@ public class CommentService {
     }
 
     public Long deleteComment(Long id){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+        if (!user.isEnabled()) {
+            throw new UserBlockedException();
+        }
         commentRepository.findById(id).ifPresent(commentRepository::delete);
         return id;
     }

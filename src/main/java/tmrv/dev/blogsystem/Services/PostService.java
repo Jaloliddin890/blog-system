@@ -27,7 +27,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
 
-    private final String uploadDir = "src/main/resources/static/images/postImages/";
+    private final String uploadDir = "uploads/postImages/";
 
     public PostService(PostRepository postRepository, UserRepository userRepository) {
         this.postRepository = postRepository;
@@ -111,7 +111,7 @@ public class PostService {
             String fileName = file.getOriginalFilename();
             Path filePath = Paths.get(uploadDir + fileName);
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-            existingPost.setImagePath("/images/postImages/" + fileName);
+            existingPost.setImagePath("/uploads/postImages/" + fileName);
         }
 
         return postRepository.save(existingPost);

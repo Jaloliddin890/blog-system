@@ -1,0 +1,39 @@
+
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/blog
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=123
+      - APP_USER_UPLOAD_DIR=/app/src/main/resources/static/images/userImages
+      - APP_POST_UPLOAD_DIR=/app/src/main/resources/static/images/postImages
+    volumes:
+      - ./uploads/userImages:/app/src/main/resources/static/images/userImages
+      - ./uploads/postImages:/app/src/main/resources/static/images/postImages
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["java", "-jar", "myapp.jar"]
+
+  db:
+    image: postgres:16
+    restart: always
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: blog
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:

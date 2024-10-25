@@ -1,9 +1,8 @@
 spring:
   datasource:
-    url: 'jdbc:postgresql://localhost:5432/blog'
+    url: jdbc:postgresql://db:5432/blog
     username: postgres
     password: 123
-    driver-class-name: 'org.postgresql.Driver'
   jpa:
     hibernate:
       ddl-auto: update
@@ -22,7 +21,6 @@ logging:
   level:
     tmrv.dev.blogsystem.controller.PostController: DEBUG
     org.springframework.security: DEBUG
-# For MultiPart Files
   servlet:
     multipart:
       enabled: true

@@ -61,13 +61,13 @@ public class AuthService {
         if (imageFile != null && !imageFile.isEmpty()) {
             try {
                 String fileName = System.currentTimeMillis() + "_" + imageFile.getOriginalFilename();
-                String uploadDir = "src/main/resources/static/images/userImages/";
+                String uploadDir = "uploads/userImages/";
 
                 Path filePath = Paths.get(uploadDir, fileName);
 
                 Files.write(filePath, imageFile.getBytes());
 
-                user.setProfileImageUrl("/images/userImages/" + fileName);
+                user.setProfileImageUrl("/uploads/userImages/" + fileName);
             } catch (IOException e) {
                 throw new RuntimeException("Error saving image file", e);
             }

@@ -24,12 +24,12 @@ import java.util.Map;
 @Tag(name = "Post Controller", description = "CRUD operations for Posts")
 public class PostController {
     private final PostService postService;
-
     public PostController(PostService postService) {
         this.postService = postService;
     }
 
-    @Operation(summary = "Create a new post", description = "Create a new post with title, content, publication status, and an optional image file.")
+    @Operation(summary = "Create a new post",
+            description = "Create a new post with title, content, publication status, and an optional image file.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Post created successfully"),
             @ApiResponse(responseCode = "400", description = "Bad request (validation error)"),

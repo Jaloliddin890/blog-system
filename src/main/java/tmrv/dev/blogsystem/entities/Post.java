@@ -34,9 +34,7 @@ public class Post {
     private LocalDateTime createdAt;
 
     @Column(nullable = false)
-    private LocalDateTime updatedAt;
-
-    @Column(nullable = false)
+    private LocalDateTime updatedAt; @Column(nullable = false)
     private boolean blockComment = true;
     @PrePersist
     protected void onCreate() {

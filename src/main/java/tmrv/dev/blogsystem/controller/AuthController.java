@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import tmrv.dev.blogsystem.Services.AuthService;
-import tmrv.dev.blogsystem.dtos.UserDto;
-import tmrv.dev.blogsystem.dtos.UserDtoForLogin;
+import tmrv.dev.blogsystem.dtos.UserDtos.UserDto;
+import tmrv.dev.blogsystem.dtos.UserDtos.UserDtoForLogin;
 import tmrv.dev.blogsystem.entities.Role;
 
 @RestController

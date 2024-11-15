@@ -7,8 +7,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import tmrv.dev.blogsystem.dtos.UserDto;
-import tmrv.dev.blogsystem.dtos.UserDtoForLogin;
+import tmrv.dev.blogsystem.dtos.UserDtos.UserDto;
+import tmrv.dev.blogsystem.dtos.UserDtos.UserDtoForLogin;
 import tmrv.dev.blogsystem.entities.Role;
 import tmrv.dev.blogsystem.entities.User;
 import tmrv.dev.blogsystem.repository.UserRepository;

@@ -34,9 +34,9 @@ public class CommentService {
             throw new UserBlockedException();
         }
         Post post = postRepository.findById(postId).orElseThrow(() -> new Exception("Post not found"));
-        if(post.isBlockComment()){
+        if (post.isBlockComment()) {
             throw new Exception("Post is blocked");
-        }else{
+        } else {
             Comment comment = new Comment();
             comment.setContent(commentDto.content());
             comment.setPost(post);
@@ -55,12 +55,11 @@ public class CommentService {
         return commentRepository.findByPost(post);
     }
 
-    public Long deleteComment(Long id){
+    public Long deleteComment(Long id) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
-        if (!user.isEnabled()) {
-            throw new UserBlockedException();
-        }
+        if (!user.isEnabled()) throw new UserBlockedException();
+
         commentRepository.findById(id).ifPresent(commentRepository::delete);
         return id;
     }

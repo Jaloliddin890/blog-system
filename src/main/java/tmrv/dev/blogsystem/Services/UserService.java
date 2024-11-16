@@ -23,7 +23,6 @@ public class UserService {
         if (user.getRole().equals(Role.ADMIN)) {
             return "Cannot block admin role. Admin ID: " + user.getId();
         }
-
         user.setEnabled(false);
         userRepository.save(user);
         return "Blocked user's id: " + user.getId();
@@ -35,7 +34,6 @@ public class UserService {
         if (user.getRole().equals(Role.ADMIN)) {
             return "Cannot block admin role. Admin ID: " + user.getId();
         }
-
         user.setEnabled(true);
         userRepository.save(user);
         return "Blocked user's id: " + user.getId();
@@ -46,7 +44,6 @@ public class UserService {
         if (!userRepository.existsById(id)) {
             throw new UserNotFoundException("User not found with id: " + id);
         }
-
         userRepository.deleteById(id);
         return "Deleted user's id: " + id;
     }

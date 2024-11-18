@@ -1,4 +1,11 @@
 spring:
+  aws:
+    s3:
+      bucket-name: blogsystemfor
+      region: eu-north-1
+      access-key: AKIA4AQ3UFIWDIR4K4U3
+      secret-key: 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
+
   datasource:
     url: jdbc:postgresql://db:5432/blog
     username: postgres

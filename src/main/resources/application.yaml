@@ -3,8 +3,8 @@ spring:
     s3:
       bucket-name: blogsystemfor
       region: eu-north-1
-      access-key: AKIA4AQ3UFIWDIR4K4U3
-      secret-key: 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
+      access-key: 1
+      secret-key: 2
 
   datasource:
     url: jdbc:postgresql://db:5432/blog

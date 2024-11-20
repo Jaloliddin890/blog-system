@@ -35,9 +35,7 @@ public class PostService {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        if (!user.isEnabled()) {
-            throw new UserBlockedException();
-        }
+        if (!user.isEnabled()) throw new UserBlockedException();
         String path = uploadFileToS3(file);
         Post post = new Post();
         post.setTitle(postDto.title());

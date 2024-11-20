@@ -17,7 +17,6 @@ import java.util.function.Function;
 
 @Service
 public class JwtService {
-
     public String generateToken(User user) {
         return Jwts.builder()
                 .setSubject(user.getUsername())
@@ -48,9 +47,7 @@ public class JwtService {
     }
 
     private Claims getAllClaims(String token) {
-
         SecretKey key = getSecretKey();
-
         Jws<Claims> jws = Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()

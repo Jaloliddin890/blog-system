@@ -11,7 +11,6 @@ import tmrv.dev.blogsystem.exception.ResourceNotFoundException;
 import tmrv.dev.blogsystem.exception.UserBlockedException;
 import tmrv.dev.blogsystem.repository.PostRepository;
 import tmrv.dev.blogsystem.repository.UserRepository;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -31,8 +30,6 @@ public class PostService {
 
         this.userRepository = userRepository;
     }
-
-
 
     public Post createPost(PostDto postDto, MultipartFile file) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -59,19 +56,15 @@ public class PostService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (!user.isEnabled()) {
-            throw new UserBlockedException();
-        }
-        if (!existingPost.getUser().getId().equals(user.getId())) {
-            throw new RuntimeException("You are not authorized to update this post");
-        }
+        if (!user.isEnabled()) throw new UserBlockedException();
+
+        if (!existingPost.getUser().getId().equals(user.getId())) throw new RuntimeException("You are not authorized to update this post");
+
         String path = uploadFileToS3(file);
         existingPost.setTitle(postDto.title());
         existingPost.setContent(postDto.content());
         existingPost.setBlockComment(postDto.blockComment());
         existingPost.setImagePath(path);
-
-
         return existingPost;
     }
 
@@ -80,9 +73,7 @@ public class PostService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (!user.isEnabled()) {
-            throw new UserBlockedException();
-        }
+        if (!user.isEnabled()) throw new UserBlockedException();
         postRepository.deleteById(id);
         return "Post with ID: " + id + " deleted";
     }
@@ -98,9 +89,7 @@ public class PostService {
         Map<String, Object> response = new HashMap<>();
         response.put("post", post);
 
-        if (post.getImagePath() != null) {
-            response.put("imagePath", post.getImagePath());
-        }
+        if (post.getImagePath() != null) response.put("imagePath", post.getImagePath());
 
         return response;
     }

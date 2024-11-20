@@ -26,7 +26,7 @@ services:
     environment:
       POSTGRES_DB: blog
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123
+      POSTGRES_PASSWORD: 111
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:

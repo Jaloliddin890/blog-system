@@ -3,13 +3,14 @@ spring:
     s3:
       bucket-name: blogsystemfor
       region: eu-north-1
-      access-key: 1
-      secret-key: 2
+      access-key: AKIA4AQ3UFIWDIR4K4U3
+      secret-key: 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
 
   datasource:
-    url: jdbc:postgresql://db:5432/blog
+    url: jdbc:postgresql://localhost:5432/blog
     username: postgres
-    password: 123
+    password: 111
+    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: update
@@ -31,6 +32,6 @@ logging:
   servlet:
     multipart:
       enabled: true
-      max-file-size: 10MB
-      max-request-size: 10MB
+      max-file-size: 100MB
+      max-request-size: 100MB
 

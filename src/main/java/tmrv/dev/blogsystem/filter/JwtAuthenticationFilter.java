@@ -33,7 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String requestURI = request.getRequestURI();
-        if (requestURI.startsWith("/images/") || requestURI.startsWith("/register/") || requestURI.startsWith("/login/")) {
+        if (requestURI.startsWith("/register/") || requestURI.startsWith("/login/")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -54,7 +54,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
-        System.out.println("Hello");
 
 
         filterChain.doFilter(request, response);

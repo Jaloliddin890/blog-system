@@ -13,10 +13,6 @@ import tmrv.dev.blogsystem.repository.PostRepository;
 import tmrv.dev.blogsystem.repository.UserRepository;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,38 +20,39 @@ import java.util.Map;
 @Service
 public class PostService {
 
+
+    private final S3Service s3Service;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
 
-    private final String uploadDir = "uploads/postImages/";
-
-    public PostService(PostRepository postRepository, UserRepository userRepository) {
+    public PostService(S3Service s3Service, PostRepository postRepository, UserRepository userRepository) {
+        this.s3Service = s3Service;
         this.postRepository = postRepository;
 
         this.userRepository = userRepository;
     }
 
 
-    public Post createPost(PostDto postDto, MultipartFile file) throws IOException {
 
-
+    public Post createPost(PostDto postDto, MultipartFile file) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         if (!user.isEnabled()) {
             throw new UserBlockedException();
         }
+        String path = uploadFileToS3(file);
         Post post = new Post();
         post.setTitle(postDto.title());
         post.setContent(postDto.content());
         post.setBlockComment(postDto.blockComment());
         post.setUser(user);
-
-        return handleImage(file, post);
+        post.setImagePath(path);
+        return post;
     }
 
 
-    public Post updatePost(Long postId, PostDto postDto, MultipartFile file) throws IOException {
+    public Post updatePost(Long postId, PostDto postDto, MultipartFile file) {
         Post existingPost = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -68,12 +65,14 @@ public class PostService {
         if (!existingPost.getUser().getId().equals(user.getId())) {
             throw new RuntimeException("You are not authorized to update this post");
         }
-
+        String path = uploadFileToS3(file);
         existingPost.setTitle(postDto.title());
         existingPost.setContent(postDto.content());
         existingPost.setBlockComment(postDto.blockComment());
+        existingPost.setImagePath(path);
 
-        return handleImage(file, existingPost);
+
+        return existingPost;
     }
 
     public String deletePost(Long id) {
@@ -106,15 +105,13 @@ public class PostService {
         return response;
     }
 
-    private Post handleImage(MultipartFile file, Post existingPost) throws IOException {
-        if (file != null && !file.isEmpty()) {
-            String fileName = file.getOriginalFilename();
-            Path filePath = Paths.get(uploadDir + fileName);
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-            existingPost.setImagePath("/uploads/postImages/" + fileName);
+    private String uploadFileToS3(MultipartFile file) {
+        try {
+            String key = "files/" + System.currentTimeMillis() + "-" + file.getOriginalFilename();
+            return s3Service.uploadFile(key, file.getInputStream(), file.getSize(), file.getContentType());
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload file", e);
         }
-
-        return postRepository.save(existingPost);
     }
 
 

@@ -36,7 +36,7 @@ public class PostController {
             @ApiResponse(responseCode = "500", description = "Internal server error")})
     @PreAuthorize("hasRole('USER')")
     @PostMapping(value = "/user/createPost", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Map<String, Object>> createPost(@Parameter @RequestParam String title,
+    public ResponseEntity<Post> createPost(@Parameter @RequestParam String title,
                                                           @Parameter @RequestParam String content,
                                                           @Parameter @RequestParam boolean blockComment,
                                                           @RequestParam(value = "file", required = false) MultipartFile file) {
@@ -50,7 +50,7 @@ public class PostController {
             response.put("imagePath", post.getImagePath());
         }
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(post);
     }
 
     @Operation(summary = "Update an existing post", description = "Updates a post's title, content, publication status, and optionally its image.")

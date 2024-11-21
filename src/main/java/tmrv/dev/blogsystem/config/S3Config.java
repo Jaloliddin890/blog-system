@@ -10,7 +10,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 
 @Configuration
 public class S3Config {
-// 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
+//
     @Value("${spring.aws.s3.access-key}")
     private String accessKey;
 

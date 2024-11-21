@@ -14,19 +14,19 @@ import tmrv.dev.blogsystem.entities.User;
 import tmrv.dev.blogsystem.repository.UserRepository;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @Service
 public class AuthService {
 
+
+    private final S3Service s3Service;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager) {
+    public AuthService(S3Service s3Service, UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager) {
+        this.s3Service = s3Service;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
@@ -34,7 +34,7 @@ public class AuthService {
     }
 
     @Transactional
-    public String registerUser(UserDto userDto) throws Exception {
+    public String registerUser(UserDto userDto, MultipartFile file) throws Exception {
         if (!userDto.password().equals(userDto.confirmPassword())) {
             throw new Exception("Passwords do not match");
         }
@@ -55,27 +55,9 @@ public class AuthService {
         }
 
         user.setEnabled(true);
-        MultipartFile imageFile = userDto.profileImageUrl();
-
-
-        if (imageFile != null && !imageFile.isEmpty()) {
-            try {
-                String fileName = System.currentTimeMillis() + "_" + imageFile.getOriginalFilename();
-                String uploadDir = "uploads/userImages/";
-
-                Path filePath = Paths.get(uploadDir, fileName);
-
-                Files.write(filePath, imageFile.getBytes());
-
-                user.setProfileImageUrl("/uploads/userImages/" + fileName);
-            } catch (IOException e) {
-                throw new RuntimeException("Error saving image file", e);
-            }
-        }
-
-
+        String path = uploadFileToS3(file);
+        user.setProfileImageUrl(path);
         userRepository.save(user);
-
         return jwtService.generateToken(user);
     }
 
@@ -89,6 +71,15 @@ public class AuthService {
         User user = userRepository.findByUsername(dto.username()).orElseThrow();
 
         return jwtService.generateToken(user);
+    }
+
+    private String uploadFileToS3(MultipartFile file) {
+        try {
+            String key = "filesForUser/" + System.currentTimeMillis() + "-" + file.getOriginalFilename();
+            return s3Service.uploadFile(key, file.getInputStream(), file.getSize(), file.getContentType());
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload file", e);
+        }
     }
 
 }

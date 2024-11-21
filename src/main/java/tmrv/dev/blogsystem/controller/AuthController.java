@@ -44,7 +44,7 @@ public class AuthController {
             @RequestParam(value = "file", required = false) MultipartFile file) {
         UserDto userDto = new UserDto(username, email, password, confirmPassword, role, file);
         try {
-            String token = authService.registerUser(userDto);
+            String token = authService.registerUser(userDto, file);
             return ResponseEntity.status(HttpStatus.CREATED).body(token);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

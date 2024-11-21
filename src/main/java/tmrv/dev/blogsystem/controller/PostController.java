@@ -39,7 +39,7 @@ public class PostController {
     public ResponseEntity<Map<String, Object>> createPost(@Parameter @RequestParam String title,
                                                           @Parameter @RequestParam String content,
                                                           @Parameter @RequestParam boolean blockComment,
-                                                          @RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
+                                                          @RequestParam(value = "file", required = false) MultipartFile file) {
         PostDto postDto = new PostDto(title, content, blockComment);
         Post post = postService.createPost(postDto, file);
 

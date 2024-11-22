@@ -42,9 +42,8 @@ public class CommentController {
                                              @RequestBody @Valid CommentDto commentDto) throws Exception {
 
         Optional<Post> optionalPost = postRepository.findById(postId);
-        if (optionalPost.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Post not found.");
-        }
+        if (optionalPost.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Post not found.");
+
         Post post = optionalPost.get();
 
         if (post.isBlockComment()) {

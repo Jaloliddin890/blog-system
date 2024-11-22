@@ -11,11 +11,11 @@ import tmrv.dev.blogsystem.Services.UserService;
 import tmrv.dev.blogsystem.exception.UserNotFoundException;
 
 @RestController
-@Tag(name = "User Controller", description = "CRUD operations for Users")
-public class UserController {
+@Tag(name = "Admin Controller", description = "Admin's features")
+public class AdminController {
     private final UserService userService;
 
-    public UserController(UserService userService) {
+    public AdminController(UserService userService) {
         this.userService = userService;
     }
 

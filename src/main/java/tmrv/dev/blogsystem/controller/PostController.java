@@ -14,7 +14,6 @@ import tmrv.dev.blogsystem.Services.PostService;
 import tmrv.dev.blogsystem.dtos.PostDto;
 import tmrv.dev.blogsystem.entities.Post;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +23,7 @@ import java.util.Map;
 @Tag(name = "Post Controller", description = "CRUD operations for Posts")
 public class PostController {
     private final PostService postService;
+
     public PostController(PostService postService) {
         this.postService = postService;
     }
@@ -37,9 +37,9 @@ public class PostController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping(value = "/user/createPost", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Post> createPost(@Parameter @RequestParam String title,
-                                                          @Parameter @RequestParam String content,
-                                                          @Parameter @RequestParam boolean blockComment,
-                                                          @RequestParam(value = "file", required = false) MultipartFile file) {
+                                           @Parameter @RequestParam String content,
+                                           @Parameter @RequestParam boolean blockComment,
+                                           @RequestParam(value = "file", required = false) MultipartFile file) {
         PostDto postDto = new PostDto(title, content, blockComment);
         Post post = postService.createPost(postDto, file);
 
@@ -64,7 +64,7 @@ public class PostController {
                                            @Parameter @RequestParam String title,
                                            @Parameter @RequestParam String content,
                                            @Parameter @RequestParam boolean blockComment,
-                                           @RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
+                                           @RequestParam(value = "file", required = false) MultipartFile file) {
         PostDto postDto = new PostDto(title, content, blockComment);
         Post updatedPost = postService.updatePost(postId, postDto, file);
         return ResponseEntity.ok(updatedPost);

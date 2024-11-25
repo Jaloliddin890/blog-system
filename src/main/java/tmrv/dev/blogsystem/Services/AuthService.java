@@ -2,6 +2,7 @@ package tmrv.dev.blogsystem.Services;
 
 
 import jakarta.transaction.Transactional;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,6 +38,9 @@ public class AuthService {
     public String registerUser(UserDto userDto, MultipartFile file) throws Exception {
         if (!userDto.password().equals(userDto.confirmPassword())) {
             throw new Exception("Passwords do not match");
+        }
+        if(!isValid(userDto.email())){
+            throw new Exception("Invalid email");
         }
         if (userRepository.findByUsername(userDto.username()).isPresent()) {
             throw new Exception("Username is already taken");
@@ -80,6 +84,11 @@ public class AuthService {
         } catch (IOException e) {
             throw new RuntimeException("Failed to upload file", e);
         }
+    }
+
+
+    private boolean isValid(String email){
+        return EmailValidator.getInstance().isValid(email);
     }
 
 }

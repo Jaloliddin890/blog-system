@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import tmrv.dev.blogsystem.entities.User;
 import tmrv.dev.blogsystem.repository.UserRepository;
 
+import java.util.Optional;
+
 @Service
 public class SessionService {
 
@@ -25,9 +27,12 @@ public class SessionService {
             if (principal instanceof UserDetails) {
                 String username = ((UserDetails) principal).getUsername();
 
-                return userRepository.findByUsername(username);
+                Optional<User> userOptional = userRepository.findByUsername(username);
+
+                return userOptional.orElseThrow(() -> new RuntimeException("User not found"));
             }
         }
         return null;
     }
+
 }

@@ -12,13 +12,12 @@ import tmrv.dev.blogsystem.dtos.UserDtos.UserDto;
 import tmrv.dev.blogsystem.dtos.UserDtos.UserDtoForLogin;
 import tmrv.dev.blogsystem.entities.Role;
 import tmrv.dev.blogsystem.entities.User;
+import tmrv.dev.blogsystem.exception.EmailAlreadyRegisteredException;
 import tmrv.dev.blogsystem.repository.UserRepository;
 
 import java.io.IOException;
-
 @Service
 public class AuthService {
-
 
     private final S3Service s3Service;
     private final UserRepository userRepository;
@@ -39,13 +38,16 @@ public class AuthService {
         if (!userDto.password().equals(userDto.confirmPassword())) {
             throw new Exception("Passwords do not match");
         }
-        if(!isValid(userDto.email())){
+        if (!isValid(userDto.email())) {
             throw new Exception("Invalid email format");
         }
 
-        if (userRepository.findByEmail(userDto.email()).isPresent()) {
-            throw new Exception("Email is already registered");
-        }
+        // Use Optional to find user by email
+        userRepository.findByEmail(userDto.email())
+                .ifPresent(user -> {
+                    throw new EmailAlreadyRegisteredException(userDto.email());
+                });
+
         User user = new User();
         user.setUsername(userDto.username());
         user.setEmail(userDto.email());
@@ -57,9 +59,13 @@ public class AuthService {
         }
 
         user.setEnabled(true);
+
+        // Upload file to S3 and store the URL
         String path = uploadFileToS3(file);
         user.setProfileImageUrl(path);
+
         userRepository.save(user);
+
         return jwtService.generateToken(user);
     }
 
@@ -70,13 +76,30 @@ public class AuthService {
                         dto.password()
                 )
         );
-        User user = userRepository.findByUsername(dto.username());
+
+        // Use Optional for user lookup
+        User user = userRepository.findByUsername(dto.username())
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         return jwtService.generateToken(user);
     }
 
     private String uploadFileToS3(MultipartFile file) {
         try {
+            if (file.isEmpty()) {
+                throw new RuntimeException("File is empty");
+            }
+
+            // Check file size and type
+            if (file.getSize() > 5 * 1024 * 1024) {
+                throw new RuntimeException("File is too large. Maximum size is 5MB");
+            }
+
+            String contentType = file.getContentType();
+            if (!contentType.startsWith("image/")) {
+                throw new RuntimeException("Invalid file type. Only images are allowed.");
+            }
+
             String key = "filesForUser/" + System.currentTimeMillis() + "-" + file.getOriginalFilename();
             return s3Service.uploadFile(key, file.getInputStream(), file.getSize(), file.getContentType());
         } catch (IOException e) {
@@ -84,9 +107,7 @@ public class AuthService {
         }
     }
 
-
-    private boolean isValid(String email){
+    private boolean isValid(String email) {
         return EmailValidator.getInstance().isValid(email);
     }
-
 }

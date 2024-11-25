@@ -11,6 +11,7 @@ import tmrv.dev.blogsystem.exception.UserNotFoundException;
 import tmrv.dev.blogsystem.repository.UserRepository;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -57,24 +58,22 @@ public class UserService {
 
 
     public void updateUserInfo(UpdateUserInfoRequest updateUserInfoRequest, MultipartFile file) {
-        User user = sessionService.getSession();
+        Optional<User> userOptional = Optional.ofNullable(sessionService.getSession());
 
-        if (user != null) {
-
+        userOptional.ifPresentOrElse(user -> {
             user.setUsername(updateUserInfoRequest.getUsername());
-
 
             if (file != null) {
                 String path = uploadFileToS3(file);
                 user.setProfileImageUrl(path);
             }
 
-            // Save the updated user to the repository
             userRepository.save(user);
-        } else {
+        }, () -> {
             throw new RuntimeException("User not found in session");
-        }
+        });
     }
+
 
 
 

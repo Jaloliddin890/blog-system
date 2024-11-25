@@ -1,7 +1,6 @@
 package tmrv.dev.blogsystem.Services;
 
 
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import tmrv.dev.blogsystem.dtos.PostDto;
@@ -10,7 +9,7 @@ import tmrv.dev.blogsystem.entities.User;
 import tmrv.dev.blogsystem.exception.ResourceNotFoundException;
 import tmrv.dev.blogsystem.exception.UserBlockedException;
 import tmrv.dev.blogsystem.repository.PostRepository;
-import tmrv.dev.blogsystem.repository.UserRepository;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -22,18 +21,16 @@ public class PostService {
 
     private final S3Service s3Service;
     private final PostRepository postRepository;
-    private final UserRepository userRepository;
+    private final SessionService sessionService;
 
-    public PostService(S3Service s3Service, PostRepository postRepository, UserRepository userRepository) {
+    public PostService(S3Service s3Service, PostRepository postRepository, SessionService sessionService) {
         this.s3Service = s3Service;
         this.postRepository = postRepository;
-
-        this.userRepository = userRepository;
+        this.sessionService = sessionService;
     }
 
     public Post createPost(PostDto postDto, MultipartFile file) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByUsername(username);
+        User user = sessionService.getSession();
         if (!user.isEnabled()) throw new UserBlockedException();
         String path = uploadFileToS3(file);
         Post post = new Post();
@@ -49,12 +46,10 @@ public class PostService {
     public Post updatePost(Long postId, PostDto postDto, MultipartFile file) {
         Post existingPost = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByUsername(username);
+        User user = sessionService.getSession();
         if (!user.isEnabled()) throw new UserBlockedException();
-
-        if (!existingPost.getUser().getId().equals(user.getId())) throw new RuntimeException("You are not authorized to update this post");
-
+        if (!existingPost.getUser().getId().equals(user.getId()))
+            throw new RuntimeException("You are not authorized to update this post");
         String path = uploadFileToS3(file);
         existingPost.setTitle(postDto.title());
         existingPost.setContent(postDto.content());
@@ -64,9 +59,7 @@ public class PostService {
     }
 
     public String deletePost(Long id) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByUsername(username);
-
+        User user = sessionService.getSession();
         if (!user.isEnabled()) throw new UserBlockedException();
         postRepository.deleteById(id);
         return "Post with ID: " + id + " deleted";

@@ -29,7 +29,7 @@ public class CommentService {
 
     public void addComment(Long postId, CommentDto commentDto) throws Exception {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByUsername(username);
         if (!user.isEnabled()) {
             throw new UserBlockedException();
         }
@@ -57,7 +57,7 @@ public class CommentService {
 
     public Long deleteComment(Long id) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByUsername(username);
         if (!user.isEnabled()) throw new UserBlockedException();
 
         commentRepository.findById(id).ifPresent(commentRepository::delete);

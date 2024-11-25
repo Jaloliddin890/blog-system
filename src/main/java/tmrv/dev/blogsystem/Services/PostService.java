@@ -33,8 +33,7 @@ public class PostService {
 
     public Post createPost(PostDto postDto, MultipartFile file) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByUsername(username);
         if (!user.isEnabled()) throw new UserBlockedException();
         String path = uploadFileToS3(file);
         Post post = new Post();
@@ -51,9 +50,7 @@ public class PostService {
         Post existingPost = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
+        User user = userRepository.findByUsername(username);
         if (!user.isEnabled()) throw new UserBlockedException();
 
         if (!existingPost.getUser().getId().equals(user.getId())) throw new RuntimeException("You are not authorized to update this post");
@@ -68,8 +65,7 @@ public class PostService {
 
     public String deletePost(Long id) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByUsername(username);
 
         if (!user.isEnabled()) throw new UserBlockedException();
         postRepository.deleteById(id);

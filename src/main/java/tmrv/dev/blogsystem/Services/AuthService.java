@@ -40,11 +40,9 @@ public class AuthService {
             throw new Exception("Passwords do not match");
         }
         if(!isValid(userDto.email())){
-            throw new Exception("Invalid email");
+            throw new Exception("Invalid email format");
         }
-        if (userRepository.findByUsername(userDto.username()).isPresent()) {
-            throw new Exception("Username is already taken");
-        }
+
         if (userRepository.findByEmail(userDto.email()).isPresent()) {
             throw new Exception("Email is already registered");
         }
@@ -72,7 +70,7 @@ public class AuthService {
                         dto.password()
                 )
         );
-        User user = userRepository.findByUsername(dto.username()).orElseThrow();
+        User user = userRepository.findByUsername(dto.username());
 
         return jwtService.generateToken(user);
     }

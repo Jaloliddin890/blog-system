@@ -43,7 +43,6 @@ public class CommentService {
                     savedComment.getContent()
             );
         }
-
     }
 
     public List<Comment> getCommentsByPostId(Long postId) throws Exception {

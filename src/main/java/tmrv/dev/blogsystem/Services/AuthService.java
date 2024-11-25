@@ -41,8 +41,6 @@ public class AuthService {
         if (!isValid(userDto.email())) {
             throw new Exception("Invalid email format");
         }
-
-        // Use Optional to find user by email
         userRepository.findByEmail(userDto.email())
                 .ifPresent(user -> {
                     throw new EmailAlreadyRegisteredException(userDto.email());
@@ -57,15 +55,10 @@ public class AuthService {
         } else {
             user.setRole(userDto.role());
         }
-
         user.setEnabled(true);
-
-        // Upload file to S3 and store the URL
         String path = uploadFileToS3(file);
         user.setProfileImageUrl(path);
-
         userRepository.save(user);
-
         return jwtService.generateToken(user);
     }
 
@@ -76,8 +69,6 @@ public class AuthService {
                         dto.password()
                 )
         );
-
-        // Use Optional for user lookup
         User user = userRepository.findByUsername(dto.username())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -89,17 +80,13 @@ public class AuthService {
             if (file.isEmpty()) {
                 throw new RuntimeException("File is empty");
             }
-
-            // Check file size and type
             if (file.getSize() > 5 * 1024 * 1024) {
                 throw new RuntimeException("File is too large. Maximum size is 5MB");
             }
-
             String contentType = file.getContentType();
             if (!contentType.startsWith("image/")) {
                 throw new RuntimeException("Invalid file type. Only images are allowed.");
             }
-
             String key = "filesForUser/" + System.currentTimeMillis() + "-" + file.getOriginalFilename();
             return s3Service.uploadFile(key, file.getInputStream(), file.getSize(), file.getContentType());
         } catch (IOException e) {

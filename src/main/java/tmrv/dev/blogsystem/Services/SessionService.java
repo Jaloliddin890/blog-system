@@ -23,12 +23,9 @@ public class SessionService {
 
         if (authentication != null) {
             Object principal = authentication.getPrincipal();
-
             if (principal instanceof UserDetails) {
                 String username = ((UserDetails) principal).getUsername();
-
                 Optional<User> userOptional = userRepository.findByUsername(username);
-
                 return userOptional.orElseThrow(() -> new RuntimeException("User not found"));
             }
         }

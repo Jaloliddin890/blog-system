@@ -59,15 +59,12 @@ public class UserService {
 
     public void updateUserInfo(UpdateUserInfoRequest updateUserInfoRequest, MultipartFile file) {
         Optional<User> userOptional = Optional.ofNullable(sessionService.getSession());
-
         userOptional.ifPresentOrElse(user -> {
             user.setUsername(updateUserInfoRequest.getUsername());
-
             if (file != null) {
                 String path = uploadFileToS3(file);
                 user.setProfileImageUrl(path);
             }
-
             userRepository.save(user);
         }, () -> {
             throw new RuntimeException("User not found in session");

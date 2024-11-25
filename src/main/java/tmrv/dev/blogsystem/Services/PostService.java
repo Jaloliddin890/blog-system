@@ -42,7 +42,6 @@ public class PostService {
         return post;
     }
 
-
     public Post updatePost(Long postId, PostDto postDto, MultipartFile file) {
         Post existingPost = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
@@ -72,12 +71,9 @@ public class PostService {
     public Map<String, Object> getPost(Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found with ID: " + postId));
-
         Map<String, Object> response = new HashMap<>();
         response.put("post", post);
-
         if (post.getImagePath() != null) response.put("imagePath", post.getImagePath());
-
         return response;
     }
 

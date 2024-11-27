@@ -1,10 +1,12 @@
 package tmrv.dev.blogsystem.Services;
 
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import tmrv.dev.blogsystem.dtos.UserDtos.UpdateUserInfoRequest;
+import tmrv.dev.blogsystem.dtos.UserDtos.UserProfileDTO;
 import tmrv.dev.blogsystem.entities.Role;
 import tmrv.dev.blogsystem.entities.User;
 import tmrv.dev.blogsystem.exception.UserNotFoundException;
@@ -68,6 +70,17 @@ public class UserService {
     }
 
 
+    public void UserProfileUpdate(UserProfileDTO userProfileDTO, Long userId, MultipartFile file) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        user.setUsername(userProfileDTO.getUsername());
+        user.setEmail(userProfileDTO.getEmail());
+
+        String path = uploadFileToS3(file);
+        user.setProfileImageUrl(path);
+
+        userRepository.save(user);
+    }
 
 
     private String uploadFileToS3(MultipartFile file) {
@@ -78,8 +91,6 @@ public class UserService {
             throw new RuntimeException("Failed to upload file", e);
         }
     }
-
-
 
 
 }

@@ -1,13 +1,13 @@
 package tmrv.dev.blogsystem.controller;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import tmrv.dev.blogsystem.Services.UserService;
+import tmrv.dev.blogsystem.dtos.UserDtos.UserProfileDTO;
 import tmrv.dev.blogsystem.exception.UserNotFoundException;
 
 @RestController
@@ -53,6 +53,17 @@ public class AdminController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
+    }
+
+    @PatchMapping("/admin/updateUser/{userID}")
+    public ResponseEntity<String> updateUser(@PathVariable Long userID,
+                                             @Parameter @RequestParam(required = false) String username,
+                                             @Parameter @RequestParam(required = false)  String email,
+                                             @RequestParam(value = "file", required = false) MultipartFile file) {
+
+        UserProfileDTO dto = new UserProfileDTO(username, email, file);
+        userService.UserProfileUpdate(dto, userID, file);
+        return ResponseEntity.ok("Updated User: " + userID);
     }
 
 

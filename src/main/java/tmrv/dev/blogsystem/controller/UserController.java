@@ -6,13 +6,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import tmrv.dev.blogsystem.Services.PostService;
 import tmrv.dev.blogsystem.Services.UserService;
 import tmrv.dev.blogsystem.dtos.UserDtos.UpdateUserInfoRequest;
+import tmrv.dev.blogsystem.entities.Post;
+
+import java.util.List;
 
 @RestController
 @Tag(name = "User Controller", description = "User's features")
@@ -21,9 +22,11 @@ import tmrv.dev.blogsystem.dtos.UserDtos.UpdateUserInfoRequest;
 public class UserController {
 
     private final UserService userService;
+    private final PostService postService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, PostService postService) {
         this.userService = userService;
+        this.postService = postService;
     }
 
     @PutMapping(value = "/cabinet/update/user-info", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -38,6 +41,14 @@ public class UserController {
 
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/cabinet/getPosts")
+    public ResponseEntity<List<Post>> getMyPosts() {
+        List<Post> posts = postService.getCurrentUserPosts();
+        return ResponseEntity.ok(posts);
+    }
+
+
 
 }
 

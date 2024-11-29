@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class PostService {
@@ -57,7 +56,6 @@ public class PostService {
         existingPost.setBlockComment(postDto.blockComment());
         existingPost.setImagePath(path);
         postRepository.save(existingPost);
-
         return existingPost;
     }
 
@@ -65,7 +63,6 @@ public class PostService {
         User user = sessionService.getSession();
         if (!user.isEnabled()) throw new UserBlockedException();
         postRepository.deleteById(id);
-
         return "Post with ID: " + id + " deleted";
     }
 
@@ -84,12 +81,7 @@ public class PostService {
 
     public List<Post> getCurrentUserPosts() {
         User currentUser = sessionService.getSession();
-
-        if (currentUser == null) {
-            throw new RuntimeException("No authenticated user found");
-        }
-
-        // Fetch posts by user ID
+        if (currentUser == null) throw new RuntimeException("No authenticated user found");
         return postRepository.findByUserId(currentUser.getId());
     }
 

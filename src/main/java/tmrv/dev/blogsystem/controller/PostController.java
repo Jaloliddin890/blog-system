@@ -42,14 +42,11 @@ public class PostController {
                                            @RequestParam(value = "file", required = false) MultipartFile file) {
         PostDto postDto = new PostDto(title, content, blockComment);
         Post post = postService.createPost(postDto, file);
-
         Map<String, Object> response = new HashMap<>();
         response.put("post", post);
-
         if (post.getImagePath() != null) {
             response.put("imagePath", post.getImagePath());
         }
-
         return ResponseEntity.ok(post);
     }
 

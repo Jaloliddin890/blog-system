@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class PostService {
@@ -39,6 +40,7 @@ public class PostService {
         post.setBlockComment(postDto.blockComment());
         post.setUser(user);
         post.setImagePath(path);
+        postRepository.save(post);
         return post;
     }
 
@@ -54,6 +56,8 @@ public class PostService {
         existingPost.setContent(postDto.content());
         existingPost.setBlockComment(postDto.blockComment());
         existingPost.setImagePath(path);
+        postRepository.save(existingPost);
+
         return existingPost;
     }
 
@@ -61,6 +65,7 @@ public class PostService {
         User user = sessionService.getSession();
         if (!user.isEnabled()) throw new UserBlockedException();
         postRepository.deleteById(id);
+
         return "Post with ID: " + id + " deleted";
     }
 
@@ -75,6 +80,17 @@ public class PostService {
         response.put("post", post);
         if (post.getImagePath() != null) response.put("imagePath", post.getImagePath());
         return response;
+    }
+
+    public List<Post> getCurrentUserPosts() {
+        User currentUser = sessionService.getSession();
+
+        if (currentUser == null) {
+            throw new RuntimeException("No authenticated user found");
+        }
+
+        // Fetch posts by user ID
+        return postRepository.findByUserId(currentUser.getId());
     }
 
     private String uploadFileToS3(MultipartFile file) {

@@ -34,11 +34,9 @@ public class UserController {
             @Parameter(description = "Request body containing updated user information")
             @Valid @RequestParam(value = "username") String username,
             @RequestParam(value = "file", required = false) MultipartFile file) {
-
         UpdateUserInfoRequest updateUserInfoRequest = new UpdateUserInfoRequest();
         updateUserInfoRequest.setUsername(username);
         userService.updateUserInfo(updateUserInfoRequest, file);
-
         return ResponseEntity.noContent().build();
     }
 

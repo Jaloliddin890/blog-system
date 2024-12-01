@@ -29,7 +29,7 @@ public class UserController {
         this.postService = postService;
     }
 
-    @PutMapping(value = "/cabinet/update/user-info", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(value = "/cabinet/update/userInfo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> updateUserInfo(
             @Parameter(description = "Request body containing updated user information")
             @Valid @RequestParam(value = "username") String username,

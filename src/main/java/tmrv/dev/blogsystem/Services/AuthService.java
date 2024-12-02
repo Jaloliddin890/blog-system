@@ -80,10 +80,11 @@ public class AuthService {
             if (file.isEmpty()) {
                 throw new RuntimeException("File is empty");
             }
-            if (file.getSize() > 5 * 1024 * 1024) {
-                throw new RuntimeException("File is too large. Maximum size is 5MB");
+            if (file.getSize() > 50 * 1024 * 1024) {
+                throw new RuntimeException("File is too large. Maximum size is 50MB");
             }
             String contentType = file.getContentType();
+            assert contentType != null;
             if (!contentType.startsWith("image/")) {
                 throw new RuntimeException("Invalid file type. Only images are allowed.");
             }

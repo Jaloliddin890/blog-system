@@ -16,6 +16,7 @@ import tmrv.dev.blogsystem.exception.EmailAlreadyRegisteredException;
 import tmrv.dev.blogsystem.repository.UserRepository;
 
 import java.io.IOException;
+
 @Service
 public class AuthService {
 
@@ -45,7 +46,6 @@ public class AuthService {
                 .ifPresent(user -> {
                     throw new EmailAlreadyRegisteredException(userDto.email());
                 });
-
         User user = new User();
         user.setUsername(userDto.username());
         user.setEmail(userDto.email());
@@ -56,7 +56,10 @@ public class AuthService {
             user.setRole(userDto.role());
         }
         user.setEnabled(true);
-        String path = uploadFileToS3(file);
+        String path = null;
+        if (file != null && !file.isEmpty()) {
+            path = uploadFileToS3(file);
+        }
         user.setProfileImageUrl(path);
         userRepository.save(user);
         return jwtService.generateToken(user);

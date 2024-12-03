@@ -1,6 +1,7 @@
 package tmrv.dev.blogsystem.Services;
 
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import tmrv.dev.blogsystem.dtos.PostDto;
@@ -11,12 +12,17 @@ import tmrv.dev.blogsystem.exception.UserBlockedException;
 import tmrv.dev.blogsystem.repository.PostRepository;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service
 public class PostService {
+
+
+    @Value("${spring.aws.s3.bucket-name}")
+    private String bucketName;
 
 
     private final S3Service s3Service;
@@ -93,6 +99,13 @@ public class PostService {
             throw new RuntimeException("Failed to upload file", e);
         }
     }
+    public InputStream downloadImage(Long postID) {
+        Post post = postRepository.findById(postID)
+                .orElseThrow(() -> new ResourceNotFoundException("Image not found with id: " + postID));
+        String fileKey = post.getImagePath().replace("https://" + bucketName + ".s3.amazonaws.com/", "");
+        return s3Service.downloadFile(fileKey);
+    }
+
 
 
 }

@@ -2,9 +2,12 @@ package tmrv.dev.blogsystem.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,6 +17,8 @@ import tmrv.dev.blogsystem.Services.PostService;
 import tmrv.dev.blogsystem.dtos.PostDto;
 import tmrv.dev.blogsystem.entities.Post;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,6 +106,27 @@ public class PostController {
     @GetMapping("/both/getAll")
     public ResponseEntity<List<Post>> getAll() {
         return ResponseEntity.ok(postService.getAllPosts());
+    }
+
+
+    @Operation(summary = "Download Image", description = "Downloads the image file. Accessible by Admin and User roles.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Image file downloaded successfully"),
+            @ApiResponse(responseCode = "404", description = "Image not found", content = @Content)
+    })
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @GetMapping("/both/download-image/{postID}")
+    public ResponseEntity<byte[]> downloadImage(
+            @Parameter(description = "ID of the image to download", required = true) @PathVariable Long postID) throws IOException {
+        InputStream imageInputStream = postService.downloadImage(postID);
+        byte[] imageBytes = imageInputStream.readAllBytes();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=image.jpg");
+        headers.add(HttpHeaders.CONTENT_TYPE, MediaType.IMAGE_JPEG_VALUE);
+        headers.add(HttpHeaders.CONTENT_LENGTH, String.valueOf(imageBytes.length));
+
+        return new ResponseEntity<>(imageBytes, headers, HttpStatus.OK);
     }
 
 

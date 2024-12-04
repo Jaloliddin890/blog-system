@@ -66,8 +66,7 @@ public class PostService {
     }
 
     public String deletePost(Long id) {
-        User user = sessionService.getSession();
-        if (!user.isEnabled()) throw new UserBlockedException();
+        if (!sessionService.getSession().isEnabled()) throw new UserBlockedException();
         postRepository.deleteById(id);
         return "Post with ID: " + id + " deleted";
     }
@@ -100,11 +99,8 @@ public class PostService {
         }
     }
     public InputStream downloadImage(Long postID) {
-
         Post post = postRepository.findById(postID)
                 .orElseThrow(() -> new ResourceNotFoundException("Image not found with id: " + postID));
-
-
         String fileKey = "files/" + post.getImagePath()
                 .replace("https://" + bucketName + ".s3.amazonaws.com/files/", "");
 

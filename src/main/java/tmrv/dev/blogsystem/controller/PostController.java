@@ -16,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 import tmrv.dev.blogsystem.Services.PostService;
 import tmrv.dev.blogsystem.dtos.PostDto;
 import tmrv.dev.blogsystem.entities.Post;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -84,7 +83,6 @@ public class PostController {
         return ResponseEntity.ok(response);
     }
 
-
     @Operation(summary = "Delete a post by ID", description = "Deletes a post using its ID.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Post deleted successfully"),
@@ -97,7 +95,6 @@ public class PostController {
         return ResponseEntity.ok(deletePost);
     }
 
-
     @Operation(summary = "Get all posts", description = "Retrieves a list of all posts.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Posts retrieved successfully"),
@@ -107,7 +104,6 @@ public class PostController {
     public ResponseEntity<List<Post>> getAll() {
         return ResponseEntity.ok(postService.getAllPosts());
     }
-
 
     @Operation(summary = "Download Image", description = "Downloads the image file. Accessible by Admin and User roles.")
     @ApiResponses(value = {
@@ -120,12 +116,10 @@ public class PostController {
             @Parameter(description = "ID of the image to download", required = true) @PathVariable Long postID) throws IOException {
         InputStream imageInputStream = postService.downloadImage(postID);
         byte[] imageBytes = imageInputStream.readAllBytes();
-
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=image.jpg");
         headers.add(HttpHeaders.CONTENT_TYPE, MediaType.IMAGE_JPEG_VALUE);
         headers.add(HttpHeaders.CONTENT_LENGTH, String.valueOf(imageBytes.length));
-
         return new ResponseEntity<>(imageBytes, headers, HttpStatus.OK);
     }
 

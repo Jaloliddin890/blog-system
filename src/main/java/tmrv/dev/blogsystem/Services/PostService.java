@@ -100,11 +100,17 @@ public class PostService {
         }
     }
     public InputStream downloadImage(Long postID) {
+
         Post post = postRepository.findById(postID)
                 .orElseThrow(() -> new ResourceNotFoundException("Image not found with id: " + postID));
-        String fileKey = post.getImagePath().replace("https://" + bucketName + ".s3.amazonaws.com/", "");
+
+
+        String fileKey = "files/" + post.getImagePath()
+                .replace("https://" + bucketName + ".s3.amazonaws.com/files/", "");
+
         return s3Service.downloadFile(fileKey);
     }
+
 
 
 

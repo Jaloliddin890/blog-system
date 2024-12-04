@@ -3,7 +3,6 @@ package tmrv.dev.blogsystem.dtos.UserDtos;
 import jakarta.validation.constraints.Email;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
-import tmrv.dev.blogsystem.entities.Role;
 
 import java.io.Serializable;
 
@@ -18,11 +17,10 @@ import java.io.Serializable;
 @Builder
 public class UserProfileDTO implements Serializable {
 
-  private String username;
+    private String username;
 
-  @Email
-  private String email;
+    @Email
+    private String email;
 
-
-  private MultipartFile profileImageUrl;
+    private MultipartFile profileImageUrl;
 }

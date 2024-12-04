@@ -30,22 +30,21 @@ public class UserService {
 
     @Transactional
     public String blockUser(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
-        if (user.getRole().equals(Role.ADMIN)) {
-            return "Cannot block admin role. Admin ID: " + user.getId();
+        if (userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found with id: " + id)).getRole().equals(Role.ADMIN)) {
+            return "Cannot block admin role. Admin ID: " + userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found with id: " + id)).getId();
         }
-        user.setEnabled(false);
-        userRepository.save(user);
-        return "Blocked user's id: " + user.getId();
+        userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found with id: " + id)).setEnabled(false);
+        userRepository.save(userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found with id: " + id)));
+        return "Blocked user's id: " + userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found with id: " + id)).getId();
     }
 
     @Transactional
     public String unBlockUser(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
-        if (user.getRole().equals(Role.ADMIN)) return "Cannot block admin role. Admin ID: " + user.getId();
-        user.setEnabled(true);
-        userRepository.save(user);
-        return "Blocked user's id: " + user.getId();
+        if (userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found with id: " + id)).getRole().equals(Role.ADMIN))
+            return "Cannot block admin role. Admin ID: " + userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found with id: " + id)).getId();
+        userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found with id: " + id)).setEnabled(true);
+        userRepository.save(userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found with id: " + id)));
+        return "Blocked user's id: " + userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found with id: " + id)).getId();
     }
 
     @Transactional
@@ -53,7 +52,6 @@ public class UserService {
         if (!userRepository.existsById(id)) throw new UserNotFoundException("User not found with id: " + id);
         userRepository.deleteById(id);
     }
-
 
     public void updateUserInfo(UpdateUserInfoRequest updateUserInfoRequest, MultipartFile file) {
         Optional<User> userOptional = Optional.ofNullable(sessionService.getSession());
@@ -69,19 +67,15 @@ public class UserService {
         });
     }
 
-
     public void UserProfileUpdate(UserProfileDTO userProfileDTO, Long userId, MultipartFile file) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
         user.setUsername(userProfileDTO.getUsername());
         user.setEmail(userProfileDTO.getEmail());
-
         String path = uploadFileToS3(file);
         user.setProfileImageUrl(path);
-
         userRepository.save(user);
     }
-
 
     private String uploadFileToS3(MultipartFile file) {
         try {

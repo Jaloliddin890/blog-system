@@ -59,7 +59,6 @@ public class User implements UserDetails {
         this.updatedAt = LocalDateTime.now();
     }
 
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority(this.role.name()));

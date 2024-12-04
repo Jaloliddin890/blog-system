@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import tmrv.dev.blogsystem.Services.CustomUserDetailsService;
 import tmrv.dev.blogsystem.Services.JwtService;
-
 import java.io.IOException;
 
 @Component

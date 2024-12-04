@@ -21,8 +21,8 @@ import tmrv.dev.blogsystem.entities.Role;
 @RestController
 @Tag(name = "Authentication Controller", description = "This Controller's apis provide more security")
 public class AuthController {
-    private final AuthService authService;
 
+    private final AuthService authService;
 
     public AuthController(AuthService authService) {
         this.authService = authService;
